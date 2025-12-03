@@ -3,67 +3,61 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const LogIn = () => {
-	const { login } = useAuth();
-	const emailRef = useRef<HTMLInputElement>(null);
-	const passwordRef = useRef<HTMLInputElement>(null);
-	const [error, setError] = useState<string | null>(null);
-	const navigate = useNavigate();
+  const { login } = useAuth();
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-	async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-		e.preventDefault();
-		const email = emailRef.current?.value || "";
-		const password = passwordRef.current?.value || "";
-		try {
-			await login({ email, password });
-			navigate("/");
-		} catch (res) {
-			setError(res instanceof Error ? res.message : String(res));
-		}
-	}
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const email = emailRef.current?.value || "";
+    const password = passwordRef.current?.value || "";
+    try {
+      await login({ email, password });
+      navigate("/");
+    } catch (res) {
+      setError(res instanceof Error ? res.message : String(res));
+    }
+  }
 
-	return (
-		<div style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-			<h2>Log In</h2>
-			{error && <p style={{ color: "red" }}>{error}</p>}
+  return (
+    <div className="mt-4 text-center">
+      <h2 className="pb-4 text-3xl">Log In</h2>
+      {error && <p className="text-red-500">{error}</p>}
 
-			<form onSubmit={handleLogin}>
-				<div style={{ marginBottom: 12 }}>
-					<label>Email</label>
-					<input
-						type="email"
-						name="email"
-						ref={emailRef}
-						required
-						style={{ width: "100%", padding: 8 }}
-					/>
-				</div>
+      <form onSubmit={handleLogin}>
+        <div className="mb-5">
+          <label className="mb-2 block font-bold">Email</label>
+          <input
+            type="email"
+            name="email"
+            ref={emailRef}
+            required
+            className="mb-5 rounded border border-gray-300 p-3 shadow-md"
+          />
+        </div>
 
-				<div style={{ marginBottom: 12 }}>
-					<label>Password</label>
-					<input
-						type="password"
-						name="password"
-						ref={passwordRef}
-						required
-						style={{ width: "100%", padding: 8 }}
-					/>
-				</div>
+        <div className="mb-5">
+          <label className="mb-2 block font-bold">Password</label>
+          <input
+            type="password"
+            name="password"
+            ref={passwordRef}
+            required
+            className="mb-5 rounded border border-gray-300 p-3 shadow-md"
+          />
+        </div>
 
-				<button
-					type="submit"
-					style={{
-						padding: "10px 20px",
-						background: "#007bff",
-						color: "white",
-						border: "none",
-						borderRadius: 4,
-					}}
-				>
-					Log In
-				</button>
-			</form>
-		</div>
-	);
+        <button
+          type="submit"
+          className="bg-c-purple rounded px-8 py-5 text-white"
+        >
+          Log In
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default LogIn;

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Define custom theme colors */
+@theme {
+  --color-c-white: #f4f9f9;
+  --color-light-blue: #ccf2f4;
+  --color-mid-blue: #a4ebf3;
+  --color-c-purple: #98a8f8;
+  --color-c-gray: #aaaaaa;
+}
+
+/* Your global styles */
+html {
+  font-size: 62.5%;
+}
+
+/* Use Tailwind utilities on body */
+@layer base {
+  body {
+    @apply bg-c-white;
+  }
+}

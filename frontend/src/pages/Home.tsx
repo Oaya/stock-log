@@ -1,13 +1,12 @@
-import Header from "../components/Header";
-
 const Home = () => {
-	return (
-		<div>
-			<Header />
-			<main className="main">
-				<h1 className="username">Welcome to the Stock Log </h1>
-			</main>
-		</div>
-	);
+  return (
+    <div>
+      <div>
+        <h1 className="mt-10 text-center text-5xl">
+          Welcome to the Stock Log{" "}
+        </h1>
+      </div>
+    </div>
+  );
 };
 export default Home;

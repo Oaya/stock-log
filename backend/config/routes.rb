@@ -9,8 +9,6 @@ Rails.application.routes.draw do
 
   # Your API routes
   namespace :api do
-    namespace :v1 do
-      # resources :stocks
-    end
+    get "stocks/search", to: "stocks#search"
   end
 end

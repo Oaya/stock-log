@@ -2,14 +2,18 @@ import { useState, useContext, createContext, type ReactNode } from "react";
 
 export interface User {
 	email: string;
-	password?: string;
-	id?: number;
+	id: number;
+}
+
+export interface LoginUserData {
+	email: string;
+	password: string;
 }
 
 const AuthContext = createContext<{
 	user: User | null;
-	login: (userData: User) => Promise<void>;
-	signup: (userData: User) => Promise<void>;
+	login: (userData: LoginUserData) => Promise<void>;
+	signup: (userData: LoginUserData) => Promise<void>;
 	logout: () => Promise<void>;
 }>({
 	user: null,
@@ -21,7 +25,7 @@ const AuthContext = createContext<{
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 
-	const login = async (userData: User) => {
+	const login = async (userData: LoginUserData) => {
 		try {
 			const res = await fetch("http://localhost:3000/users/sign_in", {
 				method: "POST",
@@ -61,9 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		}
 	};
 
-	const signup = async (userData: User) => {
+	const signup = async (userData: LoginUserData) => {
 		try {
-			const res = await fetch("http://localhost:3000/users/sign_up", {
+			const res = await fetch("http://localhost:3000/users", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

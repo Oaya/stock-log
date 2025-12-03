@@ -1,20 +1,20 @@
-import { useRef, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useRef, useState } from "react";
 
-const LogIn = () => {
-	const { login } = useAuth();
+const SignUp = () => {
+	const { signup } = useAuth();
 	const emailRef = useRef<HTMLInputElement>(null);
 	const passwordRef = useRef<HTMLInputElement>(null);
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
 
-	async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		const email = emailRef.current?.value || "";
 		const password = passwordRef.current?.value || "";
 		try {
-			await login({ email, password });
+			await signup({ email, password });
 			navigate("/");
 		} catch (res) {
 			setError(res instanceof Error ? res.message : String(res));
@@ -23,10 +23,10 @@ const LogIn = () => {
 
 	return (
 		<div style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-			<h2>Log In</h2>
+			<h2>Sign Up</h2>
 			{error && <p style={{ color: "red" }}>{error}</p>}
 
-			<form onSubmit={handleLogin}>
+			<form onSubmit={handleSignup}>
 				<div style={{ marginBottom: 12 }}>
 					<label>Email</label>
 					<input
@@ -59,11 +59,10 @@ const LogIn = () => {
 						borderRadius: 4,
 					}}
 				>
-					Log In
+					Sign up
 				</button>
 			</form>
 		</div>
 	);
 };
-
-export default LogIn;
+export default SignUp;

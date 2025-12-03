@@ -1,22 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth, type User } from "../contexts/AuthContext";
 
-interface LoginProps {
-	onLogin: (user: unknown) => void;
-}
-
-interface User {
-	email: string;
-	// add id or other fields if your API returns them
-	// id: number;
-}
-
-export default function Login({ onLogin }: LoginProps) {
+export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 
 	const navigate = useNavigate();
+	const { login } = useAuth();
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -53,7 +45,9 @@ export default function Login({ onLogin }: LoginProps) {
 			localStorage.setItem("jwt", token);
 
 			const data = await res.json();
-			onLogin(data.user as User);
+			const user = data.user as User;
+			login(user);
+
 			navigate("/");
 		} catch (err) {
 			console.error(err);
@@ -63,7 +57,7 @@ export default function Login({ onLogin }: LoginProps) {
 
 	return (
 		<div style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-			<h2>Sign In</h2>
+			<h2>Log In</h2>
 
 			<form onSubmit={handleSubmit}>
 				<div style={{ marginBottom: 12 }}>

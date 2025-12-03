@@ -1,29 +1,20 @@
-import { useState } from "react";
 import Login from "../components/Login";
+import { useAuth } from "../contexts/AuthContext";
 
-type User = {
-	email: string;
-};
+const LogInPage = () => {
+	const { user } = useAuth();
 
-const LogIn = () => {
-	const [user, setUser] = useState<User | null>(null);
-
-	// Called when the Login form succeeds
-	const handleLogin = (loggedInUser: unknown) => {
-		setUser(loggedInUser as User);
-	};
-
-	if (!user) {
-		return <Login onLogin={handleLogin} />;
+	// Optional: if user is already logged in, don't show form
+	if (user) {
+		return (
+			<div className="welcome login">
+				<h2>Welcome, {user.email}</h2>
+				{/* could also navigate('/') or show a link */}
+			</div>
+		);
 	}
 
-	// After login, show something else (not the login form again)
-	return (
-		<div className="welcome login">
-			<h2>Welcome, {user.email}</h2>
-			<button onClick={() => setUser(null)}>Log out</button>
-		</div>
-	);
+	return <Login />;
 };
 
-export default LogIn;
+export default LogInPage;

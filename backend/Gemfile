@@ -20,7 +20,7 @@ gem "devise"
 gem "devise-jwt"
 gem "rack-cors"
 gem "jsonapi-serializer"
-
+gem 'finnhub_ruby', '~> 2.0.0'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -44,5 +44,3 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
-
-

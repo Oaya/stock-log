@@ -1,4 +1,8 @@
 class Stock < ApplicationRecord
+  has_many :user_stocks
+  has_many :users, through: :user_stocks
+
+  validates :ticker, :name, presence: true, uniqueness: true
 
   # Create a new Stock instance by looking up data from the Finnhub API
   def self.new_lookup(ticker_symbol)

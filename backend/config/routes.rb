@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :user_stocks
   # Devise routes for JSON API
   devise_for :users,
              defaults: { format: :json },
@@ -10,5 +11,6 @@ Rails.application.routes.draw do
   # Your API routes
   namespace :api do
     get "stocks/search", to: "stocks#search"
+    get "portfolio", to: "portfolio#show"
   end
 end

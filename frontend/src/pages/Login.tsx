@@ -15,7 +15,7 @@ const LogIn = () => {
     const password = passwordRef.current?.value || "";
     try {
       await login({ email, password });
-      navigate("/");
+      navigate("/my_portfolio");
     } catch (res) {
       setError(res instanceof Error ? res.message : String(res));
     }

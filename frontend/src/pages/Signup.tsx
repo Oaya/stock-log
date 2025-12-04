@@ -24,7 +24,7 @@ const SignUp = () => {
 
     try {
       await signup({ email, password });
-      navigate("/");
+      navigate("/my_portfolio");
     } catch (res) {
       setError(res instanceof Error ? res.message : String(res));
     }

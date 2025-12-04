@@ -1,62 +1,96 @@
 import React, { useRef, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Stock {
+  id: number;
   name: string;
   ticker: string;
   last_price: number;
 }
 
+const searchStock = async (symbol: string): Promise<Stock> => {
+  const token = localStorage.getItem("jwt");
+  if (!token) throw new Error("No token found");
+
+  const res = await fetch(
+    `http://localhost:3000/api/stocks/search?stock=${symbol}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || "Stock not found");
+
+  return data;
+};
+
+const fetchUserStocks = async (): Promise<Stock[]> => {
+  const token = localStorage.getItem("jwt");
+
+  const res = await fetch("http://localhost:3000/api/portfolio", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  console.log("Fetched user stocks:", data);
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
+
+  return data;
+};
+
 const MyPortfolio = () => {
+  const queryClient = useQueryClient();
   const stockRef = useRef<HTMLInputElement>(null);
-  const [stock, setStock] = useState<Stock | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+  //Load portfolio stocks
+  const { data: stocks, isLoading } = useQuery({
+    queryKey: ["userStocks"],
+    queryFn: fetchUserStocks,
+  });
+
+  // Search stock mutation, search stock when form is submitted and add stock to the
+  const mutation = useMutation({
+    mutationFn: searchStock,
+    onSuccess: (stock) => {
+      // Update cached portfolio without refetching
+      queryClient.setQueryData<Stock[]>(["userStocks"], (old) => {
+        if (!old) return [stock];
+        if (old.some((s) => s.ticker === stock.ticker)) return old;
+        return [...old, stock];
+      });
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const token = localStorage.getItem("jwt");
-
-      if (!token) {
-        setError("No token found, user might not be logged in");
-      }
-
-      if (
-        stockRef.current?.value == null ||
-        stockRef.current?.value.trim() === ""
-      ) {
-        setError("Please enter a stock symbol to search.");
-      }
-
-      const res = await fetch(
-        `http://localhost:3000/api/stocks/search?stock=${stockRef.current?.value}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      const data = await res.json();
-
-      if (data.error) {
-        setError(`Error: ${data.error}`);
-        return;
-      }
-
-      setStock(data);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    setError(null);
+    const symbol = stockRef.current?.value || "";
+    mutation.mutate(symbol);
   };
 
+  if (isLoading)
+    return <p className="mt-4 text-center text-2xl">Loading portfolio...</p>;
+
   return (
-    <div>
+    <div className="p-10">
       {error && (
         <p className="mt-4 text-center text-2xl text-red-500">{error}</p>
       )}
+      <h1 className="text-heading text-4xl">My Portfolio</h1>
       <form
         onSubmit={handleSearch}
         className="mx-auto flex max-w-2xl items-center space-x-2"
@@ -99,14 +133,46 @@ const MyPortfolio = () => {
           <span className="sr-only">Icon description</span>
         </button>
       </form>
-      {stock && (
-        <div className="bg-c-gray mx-auto mt-10 w-2xl items-center rounded border p-5 text-center shadow-md">
-          <h2 className="text-2xl font-bold">Stock Information</h2>
-          <p className="mt-4">Name: {stock.name}</p>
-          <p>Symbol: {stock.ticker}</p>
-          <p>Price: ${stock.last_price}</p>
-        </div>
-      )}
+
+      <div className="m-10 overflow-hidden rounded-lg shadow-lg md:mx-10">
+        <table className="w-full table-fixed">
+          <thead>
+            <tr className="bg-white text-left text-xl font-bold text-gray-600">
+              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                Ticker
+              </th>
+              <th className="w-1/4 border-r border-gray-200 px-6 py-4">Name</th>
+              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                Price
+              </th>
+              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <tbody className="bg-grey">
+            {stocks?.map((stock) => (
+              <tr key={stock.id}>
+                <td className="border border-gray-200 px-6 py-4">
+                  {stock.ticker}
+                </td>
+                <td className="truncate border border-gray-200 px-6 py-4">
+                  {stock.name}
+                </td>
+                <td className="border border-gray-200 px-6 py-4">
+                  $ {stock.last_price}
+                </td>
+                <td className="border border-gray-200 px-6 py-4">
+                  <span className="rounded-full bg-green-500 px-2 py-1 text-xs text-white">
+                    Active
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

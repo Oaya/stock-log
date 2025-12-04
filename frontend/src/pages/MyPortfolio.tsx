@@ -69,6 +69,7 @@ const MyPortfolio = () => {
             type="text"
             id="simple-search"
             name="stock"
+            onChange={() => setError(null)}
             ref={stockRef}
             className="bg-neutral-secondary-medium border-default-medium rounded-base text-heading focus:ring-brand focus:border-brand placeholder:text-body mt-5 block w-full border px-3 py-2.5 ps-9 text-sm"
             placeholder="Search branch name..."

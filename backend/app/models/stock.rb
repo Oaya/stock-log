@@ -1,5 +1,5 @@
 class Stock < ApplicationRecord
-  has_many :user_stocks
+  has_many :user_stocks, dependent: :destroy
   has_many :users, through: :user_stocks
 
   validates :ticker, :name, presence: true, uniqueness: true
@@ -13,5 +13,9 @@ class Stock < ApplicationRecord
     company = finnhub_client.company_profile2({ symbol: ticker_symbol })
 
     new(ticker: ticker_symbol, name: company["name"], last_price: price["c"])
+  end
+
+  def self.check_db(ticker_symbol)
+    where(ticker: ticker_symbol).first
   end
 end

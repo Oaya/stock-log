@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Stock {
   id: number;
@@ -8,23 +8,24 @@ interface Stock {
   last_price: number;
 }
 
-const searchStock = async (symbol: string): Promise<Stock> => {
+const addToPortfolio = async (ticker: string): Promise<Stock> => {
+  console.log("Adding to portfolio:", ticker);
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
-  const res = await fetch(
-    `http://localhost:3000/api/stocks/search?stock=${symbol}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  const res = await fetch(`http://localhost:3000/api/portfolio/add_stock`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-  );
+    body: JSON.stringify({ ticker }),
+  });
 
   const data = await res.json();
   if (!res.ok || data.error) throw new Error(data.error || "Stock not found");
 
+  console.log("Added stock to portfolio:", data);
   return data;
 };
 
@@ -54,6 +55,7 @@ const MyPortfolio = () => {
   const queryClient = useQueryClient();
   const stockRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [searchedStock, setSearchedStock] = useState<Stock | null>(null);
 
   //Load portfolio stocks
   const { data: stocks, isLoading } = useQuery({
@@ -61,9 +63,13 @@ const MyPortfolio = () => {
     queryFn: fetchUserStocks,
   });
 
+  const alreadyOwnsStock = stocks?.some(
+    (s) => s.ticker === searchedStock?.ticker,
+  );
+
   // Search stock mutation, search stock when form is submitted and add stock to the
   const mutation = useMutation({
-    mutationFn: searchStock,
+    mutationFn: addToPortfolio,
     onSuccess: (stock) => {
       // Update cached portfolio without refetching
       queryClient.setQueryData<Stock[]>(["userStocks"], (old) => {
@@ -75,11 +81,30 @@ const MyPortfolio = () => {
     onError: (err: Error) => setError(err.message),
   });
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     const symbol = stockRef.current?.value || "";
-    mutation.mutate(symbol);
+
+    const token = localStorage.getItem("jwt");
+    if (!token) throw new Error("No token found");
+
+    const res = await fetch(
+      `http://localhost:3000/api/stocks/search?stock=${symbol}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      setError(data.error || "Stock not found");
+      return;
+    }
+    setSearchedStock(data);
   };
 
   if (isLoading)
@@ -134,6 +159,23 @@ const MyPortfolio = () => {
         </button>
       </form>
 
+      {searchedStock && (
+        <div className="mx-auto mt-10 w-2xl items-center rounded border bg-white p-5 text-center shadow-md">
+          <h2 className="text-2xl font-bold">Stock Information</h2>
+          <p className="mt-4">Name: {searchedStock.name}</p>
+          <p>Symbol: {searchedStock.ticker}</p>
+          <p>Price: ${searchedStock.last_price}</p>
+          {!alreadyOwnsStock && (
+            <button
+              onClick={() => mutation.mutate(searchedStock.ticker)}
+              className="bg-c-purple mt-4 rounded px-4 py-2 text-white"
+            >
+              Add to Portfolio
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="m-10 overflow-hidden rounded-lg shadow-lg md:mx-10">
         <table className="w-full table-fixed">
           <thead>
@@ -153,7 +195,7 @@ const MyPortfolio = () => {
 
           <tbody className="bg-grey">
             {stocks?.map((stock) => (
-              <tr key={stock.id}>
+              <tr key={stock.id} className="odd:bg-white even:bg-gray-100">
                 <td className="border border-gray-200 px-6 py-4">
                   {stock.ticker}
                 </td>

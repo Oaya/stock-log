@@ -12,5 +12,6 @@ Rails.application.routes.draw do
   namespace :api do
     get "stocks/search", to: "stocks#search"
     get "portfolio", to: "portfolio#show"
+    post "portfolio/add_stock", to: "portfolio#add_stock"
   end
 end

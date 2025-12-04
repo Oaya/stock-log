@@ -1,145 +1,160 @@
-import { useState, useContext, createContext, type ReactNode } from "react";
+import {
+  useState,
+  useContext,
+  createContext,
+  type ReactNode,
+  useEffect,
+} from "react";
 
 export interface User {
-	email: string;
-	id: number;
+  email?: string;
+  id?: number;
+  token: string;
 }
 
 export interface LoginUserData {
-	email: string;
-	password: string;
+  email: string;
+  password: string;
 }
 
 const AuthContext = createContext<{
-	user: User | null;
-	login: (userData: LoginUserData) => Promise<void>;
-	signup: (userData: LoginUserData) => Promise<void>;
-	logout: () => Promise<void>;
+  user: User | null;
+  login: (userData: LoginUserData) => Promise<void>;
+  signup: (userData: LoginUserData) => Promise<void>;
+  logout: () => Promise<void>;
 }>({
-	user: null,
-	login: async () => {},
-	signup: async () => {},
-	logout: async () => {},
+  user: null,
+  login: async () => {},
+  signup: async () => {},
+  logout: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-	const login = async (userData: LoginUserData) => {
-		try {
-			const res = await fetch("http://localhost:3000/users/sign_in", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					user: {
-						email: userData.email,
-						password: userData.password,
-					},
-				}),
-			});
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
 
-			if (!res.ok) {
-				throw new Error(`Login failed: ${res.status}`);
-			}
+    if (token) {
+      setUser({
+        token,
+      });
+    }
+  }, []);
 
-			// Extract JWT from the Authorization header
-			const authHeader = res.headers.get("Authorization");
+  const login = async (userData: LoginUserData) => {
+    try {
+      const res = await fetch("http://localhost:3000/users/sign_in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: {
+            email: userData.email,
+            password: userData.password,
+          },
+        }),
+      });
 
-			const token = authHeader?.split(" ")[1];
+      const data = await res.json();
 
-			if (!token) {
-				throw new Error("No token returned from server");
-			}
+      if (data.error) {
+        throw new Error(`Login failed: ${data.error}`);
+      }
 
-			// Store token
-			localStorage.setItem("jwt", token);
+      // Extract JWT from the Authorization header
+      const authHeader = res.headers.get("Authorization");
 
-			const data = await res.json();
+      const token = authHeader?.split(" ")[1];
 
-			console.log("Login response data:", data);
+      if (!token) {
+        throw new Error("No token returned from server");
+      }
 
-			setUser({ email: data.user.email, id: data.user.id });
-		} catch (error) {
-			console.error("Error during login:", (error as Error).message);
-			throw error;
-		}
-	};
+      // Store token
+      localStorage.setItem("jwt", token);
 
-	const signup = async (userData: LoginUserData) => {
-		try {
-			const res = await fetch("http://localhost:3000/users", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					user: {
-						email: userData.email,
-						password: userData.password,
-					},
-				}),
-			});
+      setUser({ email: data.user.email, id: data.user.id, token });
+    } catch (error) {
+      console.error("Error during login:", (error as Error).message);
+      throw error;
+    }
+  };
 
-			if (!res.ok) {
-				throw new Error(`Signin failed: ${res.status}`);
-			}
+  const signup = async (userData: LoginUserData) => {
+    try {
+      const res = await fetch("http://localhost:3000/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: {
+            email: userData.email,
+            password: userData.password,
+          },
+        }),
+      });
 
-			// Extract JWT from the Authorization header
-			const authHeader = res.headers.get("Authorization");
+      const data = await res.json();
 
-			const token = authHeader?.split(" ")[1];
+      if (data.error) {
+        throw new Error(`Signin failed: ${data.error}`);
+      }
 
-			if (!token) {
-				throw new Error("No token returned from server");
-			}
+      // Extract JWT from the Authorization header
+      const authHeader = res.headers.get("Authorization");
 
-			// Store token
-			localStorage.setItem("jwt", token);
+      const token = authHeader?.split(" ")[1];
 
-			const data = await res.json();
+      if (!token) {
+        throw new Error("No token returned from server");
+      }
 
-			console.log("Sign in response data:", data);
+      // Store token
+      localStorage.setItem("jwt", token);
 
-			setUser({ email: data.user.email, id: data.user.id });
-		} catch (error) {
-			console.error("Error during Sign in:", (error as Error).message);
-			throw error;
-		}
-	};
+      console.log("Sign in response data:", data);
 
-	const logout = async () => {
-		console.log("Logging out user");
-		const token = localStorage.getItem("jwt");
+      setUser({ email: data.user.email, id: data.user.id, token });
+    } catch (error) {
+      console.error("Error during Sign in:", (error as Error).message);
+      throw error;
+    }
+  };
 
-		try {
-			if (token) {
-				const res = await fetch("http://localhost:3000/users/sign_out", {
-					method: "DELETE",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-				});
+  const logout = async () => {
+    console.log("Logging out user");
+    const token = localStorage.getItem("jwt");
 
-				if (!res.ok) {
-					// THROW an error so caller can catch it
-					throw new Error(`Logout failed: ${res.status}`);
-				}
+    try {
+      if (token) {
+        const res = await fetch("http://localhost:3000/users/sign_out", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-				localStorage.removeItem("jwt");
-				setUser(null);
-			}
-		} catch (err) {
-			console.error("Error during sign out:", (err as Error).message);
-			throw (err as Error).message;
-		}
-	};
+        if (!res.ok) {
+          // THROW an error so caller can catch it
+          throw new Error(`Logout failed: ${res.status}`);
+        }
 
-	return (
-		<AuthContext.Provider value={{ user, login, signup, logout }}>
-			{children}
-		</AuthContext.Provider>
-	);
+        localStorage.removeItem("jwt");
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Error during sign out:", (err as Error).message);
+      throw (err as Error).message;
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, signup, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-	return useContext(AuthContext);
+  return useContext(AuthContext);
 }

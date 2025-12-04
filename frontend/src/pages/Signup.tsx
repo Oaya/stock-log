@@ -32,7 +32,7 @@ const SignUp = () => {
 
   return (
     <div className="mt-4 text-center">
-      <h2 className="pb-4 text-3xl">Log In</h2>
+      <h2 className="pb-4 text-3xl">Sign up</h2>
       {error && <p className="text-red-500">{error}</p>}
 
       <form onSubmit={handleSignup}>
@@ -42,6 +42,7 @@ const SignUp = () => {
             type="email"
             name="email"
             ref={emailRef}
+            onChange={() => setError(null)}
             required
             className="mb-5 rounded border border-gray-300 p-3 shadow-md"
           />
@@ -53,6 +54,7 @@ const SignUp = () => {
             type="password"
             name="password"
             ref={passwordRef}
+            onChange={() => setError(null)}
             required
             className="mb-5 rounded border border-gray-300 p-3 shadow-md"
           />
@@ -64,6 +66,7 @@ const SignUp = () => {
             type="password"
             name="password"
             ref={confirmPasswordRef}
+            onChange={() => setError(null)}
             required
             className="mb-5 rounded border border-gray-300 p-3 shadow-md"
           />

@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         }
       }, status: :created
     else
-      render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: resource.errors.full_messages.join(" ") }, status: :unprocessable_entity
     end
   end
 end

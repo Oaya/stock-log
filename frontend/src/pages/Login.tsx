@@ -33,6 +33,7 @@ const LogIn = () => {
             type="email"
             name="email"
             ref={emailRef}
+            onChange={() => setError(null)}
             required
             className="mb-5 rounded border border-gray-300 p-3 shadow-md"
           />
@@ -44,6 +45,7 @@ const LogIn = () => {
             type="password"
             name="password"
             ref={passwordRef}
+            onChange={() => setError(null)}
             required
             className="mb-5 rounded border border-gray-300 p-3 shadow-md"
           />

@@ -13,5 +13,6 @@ Rails.application.routes.draw do
     get "stocks/search", to: "stocks#search"
     get "portfolio", to: "portfolio#show"
     post "portfolio/add_stock", to: "portfolio#add_stock"
+    delete "portfolio/delete_stock", to: "portfolio#delete_stock"
   end
 end

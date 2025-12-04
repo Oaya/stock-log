@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import logoImage from "../assets/stock-market.png";
+import logoImage from "../../assets/stock-market.png";
 
 export default function Header() {
   const { user, logout } = useAuth();

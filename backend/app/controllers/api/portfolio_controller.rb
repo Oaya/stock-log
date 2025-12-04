@@ -34,5 +34,16 @@ module Api
 
       render json: stock, status: :ok
     end
+
+
+    def delete_stock
+      stock_id = params[:id]
+      user_stock = UserStock.find_by(user_id: current_user.id, stock_id: stock_id)
+      if user_stock && user_stock.destroy
+        render json: { message: "Stock removed from portfolio" }, status: :ok
+      else
+        render json: { error: "Stock not found in portfolio" }, status: :not_found
+      end
+    end
   end
 end

@@ -3,9 +3,10 @@ import Login from "./pages//Login";
 import Home from "./pages/Home";
 import SignUp from "./pages/Signup";
 import MyPortfolio from "./pages/MyPortfolio";
-import Header from "./components/Header";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/routing/PrivateRoute";
+import Header from "./components/layout/Header";
 
 const queryClient = new QueryClient();
 

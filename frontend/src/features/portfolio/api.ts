@@ -10,14 +10,17 @@ export const addToPortfolio = async (ticker: string): Promise<Stock> => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
-  const res = await fetch(`http://localhost:3000/api/portfolio/add_stock`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/portfolio/add_stock`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ticker }),
     },
-    body: JSON.stringify({ ticker }),
-  });
+  );
 
   const data = await res.json();
   if (!res.ok || data.error) throw new Error(data.error || "Stock not found");
@@ -29,7 +32,7 @@ export const addToPortfolio = async (ticker: string): Promise<Stock> => {
 export const fetchUserStocks = async (): Promise<Stock[]> => {
   const token = localStorage.getItem("jwt");
 
-  const res = await fetch("http://localhost:3000/api/portfolio", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/portfolio`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

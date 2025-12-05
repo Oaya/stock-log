@@ -8,6 +8,7 @@ import EditProfile from "./pages/EditProfile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PrivateRoute from "./components/routing/PrivateRoute";
 import Header from "./components/layout/Header";
+import Friends from "./features/friend/FriendsView";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,15 @@ export default function App() {
             element={
               <PrivateRoute>
                 <EditProfile />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="my_friends"
+            element={
+              <PrivateRoute>
+                <Friends />
               </PrivateRoute>
             }
           />

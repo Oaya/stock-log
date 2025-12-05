@@ -4,10 +4,8 @@ import type {
   User,
 } from "../contexts/AuthContext";
 
-const API_BASE = "http://localhost:3000";
-
 export const loginRequest = async (userData: LoginUserData) => {
-  const res = await fetch(`${API_BASE}/users/sign_in`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/users/sign_in`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -50,7 +48,7 @@ export const loginRequest = async (userData: LoginUserData) => {
 };
 
 export const signupRequest = async (userData: LoginUserData) => {
-  const res = await fetch(`${API_BASE}/users`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -99,7 +97,7 @@ export const logoutRequest = async () => {
   const token = localStorage.getItem("jwt");
 
   if (token) {
-    const res = await fetch(`${API_BASE}/users/sign_out`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/sign_out`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -115,7 +113,7 @@ export const logoutRequest = async () => {
 };
 
 export const meRequest = async (token: string): Promise<User> => {
-  const res = await fetch(`${API_BASE}/api/me`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -142,7 +140,7 @@ export const updateUserRequest = async (
   token: string,
   user: UpdateUserData,
 ) => {
-  const res = await fetch(`${API_BASE}/users`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

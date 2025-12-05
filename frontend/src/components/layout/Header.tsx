@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <div>
       <header className="bg-light-blue flex justify-between p-8">
-        <div>
+        <div className="flex gap-8 px-4 py-2">
           <NavLink
             to="/"
             className="position-absolute flex items-center gap-4 text-xl font-bold"
@@ -36,6 +36,20 @@ export default function Header() {
             <img src={logoImage} alt="logo" className="h-10 w-10" />
             <span className="text-4xl">Stock Log</span>
           </NavLink>
+
+          <div className="flex">
+            {location.pathname !== "/my_portfolio" && (
+              <NavLink to="/my_portfolio" className="block px-4 py-2 text-2xl">
+                My Portfolio
+              </NavLink>
+            )}
+
+            {location.pathname !== "/my_friends" && (
+              <NavLink to="/my_friends" className="block px-4 py-2 text-2xl">
+                My Friends
+              </NavLink>
+            )}
+          </div>
         </div>
 
         <div className="flex gap-4">
@@ -46,13 +60,6 @@ export default function Header() {
                 className="bg-c-purple inline-flex items-center justify-center rounded px-4 py-1 shadow-md"
               >
                 Login
-              </NavLink>
-
-              <NavLink
-                to="/signup"
-                className="bg-c-purple inline-flex items-center justify-center rounded px-4 py-1 shadow-md"
-              >
-                Signup
               </NavLink>
             </>
           )}
@@ -89,23 +96,21 @@ export default function Header() {
                     className="ring-opacity-5 absolute right-0 mt-2 w-80 origin-top-right rounded-md bg-white text-2xl shadow-lg focus:outline-none"
                     role="menu"
                   >
-                    <div className="py-1" role="none">
+                    <div className="py-1">
                       {location.pathname !== "/my_portfolio" && (
-                        <a
-                          href="/my_portfolio"
+                        <NavLink
+                          to="/my_portfolio"
                           className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
                         >
                           My Portfolio
-                        </a>
+                        </NavLink>
                       )}
-                      <a
-                        href="/edit_profile"
+                      <NavLink
+                        to="/edit_profile"
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
                       >
                         Edit Profile
-                      </a>
+                      </NavLink>
                     </div>
                   </div>
                 )}

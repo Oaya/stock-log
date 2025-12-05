@@ -8,7 +8,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
       render json: {
         user: {
           id: resource.id,
-          email: resource.email
+          email: resource.email,
+          first_name: resource.first_name,
+          last_name: resource.last_name
         }
       }, status: :created
     else

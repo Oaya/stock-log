@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 
 const SignUp = () => {
   const { signup } = useAuth();
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
@@ -12,6 +14,8 @@ const SignUp = () => {
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const first_name = firstNameRef.current?.value || "";
+    const last_name = lastNameRef.current?.value || "";
     const email = emailRef.current?.value || "";
     const password = passwordRef.current?.value || "";
     const confirmPassword = confirmPasswordRef.current?.value || "";
@@ -23,7 +27,12 @@ const SignUp = () => {
     }
 
     try {
-      await signup({ email, password });
+      await signup({
+        first_name,
+        last_name,
+        email,
+        password,
+      });
       navigate("/my_portfolio");
     } catch (res) {
       setError(res instanceof Error ? res.message : String(res));
@@ -31,11 +40,37 @@ const SignUp = () => {
   }
 
   return (
-    <div className="mt-4 text-center">
-      <h2 className="pb-4 text-3xl">Sign up</h2>
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="m-10">
+      <h2 className="pb-4 text-center text-5xl">Sign up</h2>
+      {error && (
+        <p className="m-4 text-center text-2xl text-red-500">{error}</p>
+      )}
 
-      <form onSubmit={handleSignup}>
+      <form onSubmit={handleSignup} className="mx-auto w-200 text-2xl">
+        <div className="mb-5">
+          <label className="mb-2 block font-bold">First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            ref={firstNameRef}
+            onChange={() => setError(null)}
+            required
+            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label className="mb-2 block font-bold">Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            ref={lastNameRef}
+            onChange={() => setError(null)}
+            required
+            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+          />
+        </div>
+
         <div className="mb-5">
           <label className="mb-2 block font-bold">Email</label>
           <input
@@ -44,7 +79,7 @@ const SignUp = () => {
             ref={emailRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 rounded border border-gray-300 p-3 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
           />
         </div>
 
@@ -56,7 +91,7 @@ const SignUp = () => {
             ref={passwordRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 rounded border border-gray-300 p-3 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
           />
         </div>
 
@@ -68,13 +103,13 @@ const SignUp = () => {
             ref={confirmPasswordRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 rounded border border-gray-300 p-3 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
           />
         </div>
 
         <button
           type="submit"
-          className="bg-c-purple rounded px-8 py-5 text-white"
+          className="bg-c-purple w-full rounded px-8 py-5 text-center text-white"
         >
           Sign Up
         </button>

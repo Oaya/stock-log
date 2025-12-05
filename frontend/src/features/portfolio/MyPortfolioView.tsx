@@ -98,7 +98,7 @@ const MyPortfolio = () => {
             name="stock"
             onChange={() => setError(null)}
             ref={stockRef}
-            className="bg-neutral-secondary-medium border-default-medium rounded-base text-heading focus:ring-brand focus:border-brand placeholder:text-body mt-5 block w-full border px-3 py-2.5 ps-9 text-sm"
+            className="bg-neutral-secondary-medium border-default-medium rounded-base text-heading focus:ring-brand focus:border-brand placeholder:text-body mt-5 block w-full border bg-white px-3 py-2.5 ps-9 text-sm"
             placeholder="Search branch name..."
             required
           />
@@ -144,48 +144,56 @@ const MyPortfolio = () => {
         </div>
       )}
 
-      <div className="m-10 overflow-hidden rounded-lg shadow-lg md:mx-10">
-        <table className="w-full table-fixed">
-          <thead>
-            <tr className="bg-white text-left text-xl font-bold text-gray-600">
-              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
-                Ticker
-              </th>
-              <th className="w-1/4 border-r border-gray-200 px-6 py-4">Name</th>
-              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
-                Price
-              </th>
-              <th className="w-1/4 border-r border-gray-200 px-6 py-4">
-                Action
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className="bg-grey">
-            {stocks?.map((stock) => (
-              <tr key={stock.id} className="odd:bg-gray-100 even:bg-white">
-                <td className="border border-gray-200 px-6 py-4">
-                  {stock.ticker}
-                </td>
-                <td className="truncate border border-gray-200 px-6 py-4">
-                  {stock.name}
-                </td>
-                <td className="border border-gray-200 px-6 py-4">
-                  $ {stock.last_price}
-                </td>
-                <td className="border border-gray-200 px-6 py-4">
-                  <button
-                    onClick={() => deleteMutation.mutate(stock.id.toString())}
-                    className="items-center rounded bg-red-400 px-4 py-2 text-center text-white"
-                  >
-                    Remove
-                  </button>
-                </td>
+      {stocks?.length === 0 ? (
+        <p className="mt-10 text-center text-2xl">
+          You have no stocks in your portfolio.
+        </p>
+      ) : (
+        <div className="m-10 overflow-hidden rounded-lg shadow-lg md:mx-10">
+          <table className="w-full table-fixed">
+            <thead>
+              <tr className="bg-white text-left text-xl font-bold text-gray-600">
+                <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                  Ticker
+                </th>
+                <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                  Name
+                </th>
+                <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                  Price
+                </th>
+                <th className="w-1/4 border-r border-gray-200 px-6 py-4">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+
+            <tbody className="bg-grey">
+              {stocks?.map((stock) => (
+                <tr key={stock.id} className="odd:bg-gray-100 even:bg-white">
+                  <td className="border border-gray-200 px-6 py-4">
+                    {stock.ticker}
+                  </td>
+                  <td className="truncate border border-gray-200 px-6 py-4">
+                    {stock.name}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-4">
+                    $ {stock.last_price}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-4">
+                    <button
+                      onClick={() => deleteMutation.mutate(stock.id.toString())}
+                      className="items-center rounded bg-red-400 px-4 py-2 text-center text-white"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

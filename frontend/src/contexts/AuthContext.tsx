@@ -5,7 +5,7 @@ import {
   type ReactNode,
   useEffect,
 } from "react";
-import { loginRequest, meRequest } from "../api/authApi";
+import { loginRequest, meRequest, updateUserRequest } from "../api/authApi";
 
 export interface User {
   email?: string;
@@ -22,16 +22,27 @@ export interface LoginUserData {
   password: string;
 }
 
+export interface UpdateUserData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  current_password: string;
+}
+
 const AuthContext = createContext<{
   user: User | null;
   login: (userData: LoginUserData) => Promise<void>;
   signup: (userData: LoginUserData) => Promise<void>;
   logout: () => Promise<void>;
+  updateAccount: (userData: UpdateUserData) => Promise<void>;
 }>({
   user: null,
   login: async () => {},
   signup: async () => {},
   logout: async () => {},
+  updateAccount: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -73,8 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
+  async function updateAccount(userData: UpdateUserData) {
+    const token = localStorage.getItem("jwt");
+    if (!token) throw new Error("No token found");
+
+    const updatedUser = await updateUserRequest(token, userData);
+    setUser(updatedUser);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, login, signup, logout, updateAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );

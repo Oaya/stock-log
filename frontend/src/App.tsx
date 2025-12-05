@@ -3,6 +3,7 @@ import Login from "./pages//Login";
 import Home from "./pages/Home";
 import SignUp from "./pages/Signup";
 import MyPortfolio from "./pages/MyPortfolio";
+import EditProfile from "./pages/EditProfile";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PrivateRoute from "./components/routing/PrivateRoute";
@@ -24,6 +25,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <MyPortfolio />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="edit_profile"
+            element={
+              <PrivateRoute>
+                <EditProfile />
               </PrivateRoute>
             }
           />

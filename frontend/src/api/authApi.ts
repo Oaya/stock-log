@@ -1,4 +1,8 @@
-import type { LoginUserData, User } from "../contexts/AuthContext";
+import type {
+  LoginUserData,
+  UpdateUserData,
+  User,
+} from "../contexts/AuthContext";
 
 const API_BASE = "http://localhost:3000";
 
@@ -130,6 +134,45 @@ export const meRequest = async (token: string): Promise<User> => {
     id: data.id,
     first_name: data.first_name,
     last_name: data.last_name,
+    token,
+  };
+};
+
+export const updateUserRequest = async (
+  token: string,
+  user: UpdateUserData,
+) => {
+  const res = await fetch(`${API_BASE}/users`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        password: user.password,
+        password_confirmation: user.password_confirmation,
+        current_password: user.current_password,
+      },
+    }),
+  });
+
+  const data = await res.json();
+
+  console.log("Update response data:", data);
+
+  if (!res.ok || data.error) {
+    throw new Error(data.error || "Update failed");
+  }
+
+  return {
+    email: data.user.email,
+    id: data.user.id,
+    first_name: data.user.first_name,
+    last_name: data.user.last_name,
     token,
   };
 };

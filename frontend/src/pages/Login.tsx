@@ -37,7 +37,7 @@ const LogIn = () => {
             ref={emailRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 px-8 py-5 shadow-md"
           />
         </div>
 
@@ -49,7 +49,7 @@ const LogIn = () => {
             ref={passwordRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 px-8 py-5 shadow-md"
           />
         </div>
 

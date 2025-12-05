@@ -55,19 +55,42 @@ export const removeUserStock = async (id: string) => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
-  const res = await fetch(`http://localhost:3000/api/portfolio/delete_stock`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/portfolio/delete_stock`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id }),
     },
-    body: JSON.stringify({ id }),
-  });
+  );
 
   const data = await res.json();
   if (!res.ok || data.error)
     throw new Error(data.error || "Failed to remove stock");
 
   console.log("Removed stock from portfolio:", data);
+  return data;
+};
+
+export const searchStockBySymbol = async (symbol: string) => {
+  const token = localStorage.getItem("jwt");
+  if (!token) throw new Error("No token found");
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/stocks/search?stock=${symbol}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || "Stock not found");
+
   return data;
 };

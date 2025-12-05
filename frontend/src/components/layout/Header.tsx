@@ -57,9 +57,16 @@ export default function Header() {
             <>
               <NavLink
                 to="/login"
-                className="bg-c-purple inline-flex items-center justify-center rounded px-4 py-1 shadow-md"
+                className="bg-c-purple inline-flex items-center justify-center rounded px-4 py-1 text-2xl shadow-md"
               >
                 Login
+              </NavLink>
+
+              <NavLink
+                to="/signup"
+                className="bg-c-purple inline-flex items-center justify-center rounded px-4 py-1 text-2xl shadow-md"
+              >
+                Signup
               </NavLink>
             </>
           )}

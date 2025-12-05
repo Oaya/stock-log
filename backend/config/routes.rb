@@ -15,6 +15,8 @@ Rails.application.routes.draw do
     post "portfolio/add_stock", to: "portfolio#add_stock"
     delete "portfolio/delete_stock", to: "portfolio#delete_stock"
     get "me", to: "users#me"
-    get "friends", to: "friends#show" 
+    get "my_friends", to: "users#my_friends" 
+    get "users/search", to: "users#search"
+    post "user/add_friend", to: "friendships#create"
   end
 end

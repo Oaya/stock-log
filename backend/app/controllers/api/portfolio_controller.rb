@@ -24,7 +24,7 @@ module Api
         stock = Stock.new_lookup(ticker)
 
         unless stock.save
-          return render json: { errors: stock.errors.full_messages.join(" ") },
+          return render json: { error: stock.errors.full_messages.join(" ") },
                         status: :unprocessable_entity
         end
       end

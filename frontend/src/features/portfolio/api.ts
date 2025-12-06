@@ -11,14 +11,13 @@ export const addToPortfolio = async (ticker: string): Promise<Stock> => {
   if (!token) throw new Error("No token found");
 
   const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/portfolio/add_stock`,
+    `${import.meta.env.VITE_API_URL}/api/portfolio/stock/${ticker}`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ ticker }),
     },
   );
 
@@ -56,14 +55,13 @@ export const removeUserStock = async (id: string) => {
   if (!token) throw new Error("No token found");
 
   const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/portfolio/delete_stock`,
+    `${import.meta.env.VITE_API_URL}/api/portfolio/stock/${id}`,
     {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id }),
     },
   );
 

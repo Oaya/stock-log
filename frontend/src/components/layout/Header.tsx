@@ -79,7 +79,9 @@ export default function Header() {
                     onClick={toggleDropdown}
                     className="inline-flex w-full justify-center border-gray-300 px-4 py-2 text-2xl"
                   >
-                    {user.first_name ?? user.email}
+                    {user.first_name
+                      ? `${user.first_name} ${user.last_name}`
+                      : `${user.email}`}
                     <svg
                       className="-mr-1 ml-2 h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"

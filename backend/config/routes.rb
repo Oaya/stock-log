@@ -10,13 +10,16 @@ Rails.application.routes.draw do
 
   # Your API routes
   namespace :api do
-    get "stocks/search", to: "stocks#search"
-    get "portfolio", to: "portfolio#show"
-    post "portfolio/add_stock", to: "portfolio#add_stock"
-    delete "portfolio/delete_stock", to: "portfolio#delete_stock"
     get "me", to: "users#me"
-    get "my_friends", to: "users#my_friends" 
-    get "users/search", to: "users#search"
-    post "user/add_friend", to: "friendships#create"
+    get "stocks/search", to: "stocks#search"
+    
+    get "portfolio", to: "portfolio#show"
+    post "portfolio/stock/:ticker", to: "portfolio#add_stock"
+    delete "portfolio/stock/:id", to: "portfolio#delete_stock"
+
+    get "friends", to: "users#my_friends" 
+    get "users/search/", to: "users#search"
+    post "user/friend/:id", to: "friendships#create"
+    delete "user/friend/:id", to: "friendships#destroy"
   end
 end

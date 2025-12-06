@@ -54,23 +54,24 @@ const EditProfile = () => {
       <form onSubmit={handleSignup} className="mx-auto w-200 text-2xl">
         <div className="grid md:grid-cols-2 md:gap-6">
           <div className="group relative z-0 mb-5 w-full">
-            <label className="mb-2 block font-bold">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              ref={lastNameRef}
-              onChange={() => setError(null)}
-              required
-              className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
-            />
-          </div>
-
-          <div className="group relative z-0 mb-5 w-full">
             <label className="mb-2 block font-bold">First Name</label>
             <input
               type="text"
               name="firstName"
               ref={firstNameRef}
+              defaultValue={user?.first_name}
+              onChange={() => setError(null)}
+              required
+              className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            />
+          </div>
+          <div className="group relative z-0 mb-5 w-full">
+            <label className="mb-2 block font-bold">Last Name</label>
+            <input
+              type="text"
+              name="lastName"
+              ref={lastNameRef}
+              defaultValue={user?.last_name}
               onChange={() => setError(null)}
               required
               className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"

@@ -56,9 +56,17 @@ const MyPortfolio = () => {
 
     const symbol = stockRef.current?.value || "";
 
-    const data = await searchStockBySymbol(symbol);
+    if (!symbol) {
+      setError("Please enter a stock symbol.");
+      return;
+    }
 
-    setSearchedStock(data);
+    try {
+      const data = await searchStockBySymbol(symbol);
+      setSearchedStock(data);
+    } catch (err) {
+      setError((err as Error).message || "Something went wrong");
+    }
   };
 
   if (isLoading)
@@ -79,7 +87,10 @@ const MyPortfolio = () => {
             type="text"
             id="simple-search"
             name="stock"
-            onChange={() => setError(null)}
+            onChange={() => {
+              setError(null);
+              setSearchedStock(null);
+            }}
             ref={stockRef}
             className="bg-neutral-secondary-medium border-default-medium text-heading focus:ring-brand focus:border-brand placeholder:text-body block w-full rounded border bg-white p-4 text-2xl"
             placeholder="Search stock symbol..."
@@ -109,14 +120,14 @@ const MyPortfolio = () => {
       </form>
 
       {searchedStock && (
-        <div className="mt-4 flex w-4xl items-center gap-10 rounded-md bg-gray-100 p-5 text-center shadow-md">
-          <p className="text-xl">
+        <div className="mt-4 flex w-full items-center gap-10 rounded-md bg-gray-100 p-5 text-center text-2xl shadow-md">
+          <p className="">
             <span className="font-bold"> Name:</span> {searchedStock.name}
           </p>
-          <p className="text-xl">
+          <p className="">
             <span className="font-bold"> Symbol:</span> {searchedStock.ticker}
           </p>
-          <p className="text-xl">
+          <p className="">
             <span className="font-bold"> Price:</span>{" "}
             {searchedStock.last_price}
           </p>
@@ -136,10 +147,10 @@ const MyPortfolio = () => {
           You have no stocks in your portfolio.
         </p>
       ) : (
-        <div className="mt-10 overflow-hidden rounded-lg shadow-lg">
+        <div className="mt-10 overflow-hidden rounded-lg text-2xl shadow-lg">
           <table className="w-full table-fixed">
             <thead>
-              <tr className="bg-white text-left text-xl font-bold text-gray-600">
+              <tr className="bg-white text-left font-bold text-gray-600">
                 <th className="w-1/6 border-r border-gray-200 px-6 py-4">
                   Ticker
                 </th>

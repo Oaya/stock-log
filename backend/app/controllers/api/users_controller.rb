@@ -12,7 +12,7 @@ module Api
 
     def my_friends
         user = current_user
-        friends = user.friends
+        friends = user.friends.where.not(id: current_user.id)
 
         puts friends
 
@@ -37,7 +37,8 @@ module Api
       users = User.where(
         "LOWER(email) LIKE :q OR LOWER(first_name) LIKE :q OR LOWER(last_name) LIKE :q",
         q: downcased
-      )
+      ).where.not(id: current_user.id) 
+
       render json: users.as_json(only: [:id, :email, :first_name, :last_name])
 
     end

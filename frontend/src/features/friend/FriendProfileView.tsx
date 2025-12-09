@@ -60,7 +60,7 @@ const FriendProfilePage = () => {
 
       {friendStocks?.length === 0 ? (
         <p className="mt-10 text-center text-2xl">
-          Have stocks in your portfolio.
+          This user doesn't have tracking stocks.
         </p>
       ) : (
         <div className="mt-10 overflow-hidden rounded-lg text-2xl shadow-lg">

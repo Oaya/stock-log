@@ -1,11 +1,11 @@
-export interface Friend {
+export interface User {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
 }
 
-export const fetchUserFriends = async (): Promise<Friend[]> => {
+export const fetchUserFriends = async (): Promise<User[]> => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
@@ -25,7 +25,32 @@ export const fetchUserFriends = async (): Promise<Friend[]> => {
   return data;
 };
 
-export const searchFriendById = async (query: string): Promise<Friend[]> => {
+export const fetchUserFriendById = async (id: string): Promise<User> => {
+  const token = localStorage.getItem("jwt");
+  if (!token) throw new Error("No token found");
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/user/friends/${id}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const data = await res.json();
+
+  if (!res.ok || data.error) throw new Error(data.error || "Friend not found");
+  console.log("User friend", data);
+
+  return data;
+};
+
+export const searchFriendByQueryString = async (
+  query: string,
+): Promise<User[]> => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");
 
@@ -48,7 +73,7 @@ export const searchFriendById = async (query: string): Promise<Friend[]> => {
   return data;
 };
 
-export const addToFriend = async (user_id: number): Promise<Friend> => {
+export const addToFriend = async (user_id: number): Promise<User> => {
   console.log("Adding to friend:", user_id);
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No token found");

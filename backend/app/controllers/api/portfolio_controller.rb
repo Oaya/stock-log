@@ -1,10 +1,15 @@
 module Api
   class PortfolioController < ApplicationController
-    def show
-      user = current_user
-      stocks = user.stocks
 
-      puts stocks
+    def show
+      user = User.find(params[:id])
+
+       #ONly allow viewing if it's your onw protfolio, or this user is friend
+      unless user == current_user || current_user.friends.exists?(id: user.id)
+        return render json: { error: "Not authorized" }, status: :forbidden
+      end
+
+      stocks = user.stocks
       if stocks.present?
         render json: stocks
       else

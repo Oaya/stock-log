@@ -1,50 +1,22 @@
 import { useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  addToFriend,
-  deleteFriend,
-  fetchUserFriends,
-  searchFriendById,
-  type Friend,
-} from "./api";
+import { searchFriendByQueryString, type User } from "../../services/friend";
+import { NavLink } from "react-router-dom";
+import { useFriendsData } from "../../hooks/useFriendsData";
 
-const Friends = () => {
-  const queryClient = useQueryClient();
+const FriendsList = () => {
   const [error, setError] = useState<string | null>(null);
   const friendRef = useRef<HTMLInputElement>(null);
-  const [searchedFriends, setSearchedFriends] = useState<Friend[] | null>(null);
+  const [searchedFriends, setSearchedFriends] = useState<User[] | null>(null);
 
-  //Load friends
-  const { data: friends, isLoading } = useQuery({
-    queryKey: ["userFriends"],
-    queryFn: fetchUserFriends,
-  });
+  const {
+    friends,
+    isLoading,
+    queryError,
+    addFriendMutation,
+    removeFriendMutation,
+  } = useFriendsData();
 
   const friendEmailSet = new Set(friends?.map((f) => f.email));
-
-  const addMutation = useMutation({
-    mutationFn: addToFriend,
-    onSuccess: (friend) => {
-      // Update cached portfolio without refetching
-      queryClient.setQueryData<Friend[]>(["userFriends"], (old) => {
-        if (!old) return [friend];
-        if (old.some((s) => s.email === friend.email)) return old;
-        return [...old, friend];
-      });
-    },
-    onError: (err: Error) => setError(err.message),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteFriend,
-    onSuccess: (_, id) => {
-      queryClient.setQueryData<Friend[]>(["userFriends"], (old) => {
-        if (!old) return [];
-        return old.filter((s) => s.id !== id);
-      });
-    },
-    onError: (err: Error) => setError(err.message),
-  });
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,20 +25,27 @@ const Friends = () => {
     const query = friendRef.current?.value || "";
 
     try {
-      const data = await searchFriendById(query);
+      const data = await searchFriendByQueryString(query);
       setSearchedFriends(data);
     } catch (err) {
       setError((err as Error).message);
     }
   };
 
+  const mutationError =
+    (addFriendMutation.error as Error | null)?.message ||
+    (removeFriendMutation.error as Error | null)?.message ||
+    null;
+  const finalError =
+    error || mutationError || (queryError as Error | null)?.message || null;
+
   if (isLoading)
-    return <p className="mt-4 text-center text-2xl">Loading Friends...</p>;
+    return <p className="mt-4 text-center text-2xl">Loading Friend Data...</p>;
 
   return (
     <div className="m-40">
       {error && (
-        <p className="mt-4 text-center text-2xl text-red-500">{error}</p>
+        <p className="mt-4 text-center text-2xl text-red-500">{finalError}</p>
       )}
       <h1 className="text-heading text-4xl">Friends</h1>
 
@@ -129,7 +108,7 @@ const Friends = () => {
                   <td className="px-4 py-2">
                     {!friendEmailSet.has(f.email) && (
                       <button
-                        onClick={() => addMutation.mutate(f.id)}
+                        onClick={() => addFriendMutation.mutate(f.id)}
                         className="bg-c-purple rounded px-4 py-2 text-white"
                       >
                         Add
@@ -152,13 +131,13 @@ const Friends = () => {
           <table className="w-full table-fixed">
             <thead>
               <tr className="bg-white text-left text-xl font-bold text-gray-600">
-                <th className="w-5/12 border-r border-gray-200 px-6 py-4">
+                <th className="w-4/12 border-r border-gray-200 px-6 py-4">
                   Email
                 </th>
-                <th className="w-5/12 border-r border-gray-200 px-6 py-4">
+                <th className="w-4/12 border-r border-gray-200 px-6 py-4">
                   Name
                 </th>
-                <th className="w-2/12 border-r border-gray-200 px-6 py-4">
+                <th className="w-4/12 border-r border-gray-200 px-6 py-4">
                   Action
                 </th>
               </tr>
@@ -174,11 +153,18 @@ const Friends = () => {
                     {friend.first_name} {friend.last_name}
                   </td>
                   <td className="border border-gray-200 px-6 py-4">
-                    <button
-                      onClick={() => deleteMutation.mutate(friend.id)}
-                      className="items-center rounded-md bg-red-400 px-4 py-2 text-center text-white"
+                    <NavLink
+                      to={`/user/friends/${friend.id}`}
+                      className="bg-c-purple mr-6 items-center rounded-md px-4 py-2 text-center text-white"
                     >
-                      Stop following
+                      View Profile
+                    </NavLink>
+
+                    <button
+                      onClick={() => removeFriendMutation.mutate(friend.id)}
+                      className="items-center rounded-md bg-red-300 px-4 py-2 text-center text-white"
+                    >
+                      Unfollow
                     </button>
                   </td>
                 </tr>
@@ -191,4 +177,4 @@ const Friends = () => {
   );
 };
 
-export default Friends;
+export default FriendsList;

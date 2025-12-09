@@ -28,16 +28,19 @@ export const addToPortfolio = async (ticker: string): Promise<Stock> => {
   return data;
 };
 
-export const fetchUserStocks = async (): Promise<Stock[]> => {
+export const fetchUserStocks = async (id?: string): Promise<Stock[]> => {
   const token = localStorage.getItem("jwt");
 
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/portfolio`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/user/${id}/portfolio`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   const data = await res.json();
 

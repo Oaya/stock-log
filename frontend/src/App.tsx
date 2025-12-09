@@ -1,14 +1,16 @@
 import { Routes, BrowserRouter, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import Login from "./pages//Login";
 import Home from "./pages/Home";
 import SignUp from "./pages/Signup";
 import MyPortfolio from "./pages/MyPortfolio";
 import EditProfile from "./pages/EditProfile";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PrivateRoute from "./components/routing/PrivateRoute";
 import Header from "./components/layout/Header";
-import Friends from "./features/friend/FriendsView";
+import FriendProfile from "./pages/Friends";
+import FriendsList from "./pages/FriendsList";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +44,16 @@ export default function App() {
             path="my_friends"
             element={
               <PrivateRoute>
-                <Friends />
+                <FriendsList />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/user/friends/:id"
+            element={
+              <PrivateRoute>
+                <FriendProfile />
               </PrivateRoute>
             }
           />

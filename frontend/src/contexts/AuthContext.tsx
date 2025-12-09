@@ -5,7 +5,7 @@ import {
   type ReactNode,
   useEffect,
 } from "react";
-import { loginRequest, meRequest, updateUserRequest } from "../api/authApi";
+import { loginRequest, meRequest, updateUserRequest } from "../services/auth";
 
 export interface User {
   email?: string;

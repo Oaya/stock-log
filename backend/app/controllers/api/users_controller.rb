@@ -23,6 +23,17 @@ module Api
         end
     end
 
+    def friend
+      friend = current_user.friends.find_by(id: params[:id])
+
+      if friend.nil?
+        return render json: { error: "Not authorized or not a friend" }, status: :forbidden
+      end
+
+      render json: friend
+
+    end
+
 
     def search
       #convert params string and remove tails and leading spaces

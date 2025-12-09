@@ -1,7 +1,7 @@
-import FriendsView from "../features/friend/FriendsView.tsx";
+import FriendProfileView from "../features/friend/FriendProfileView.tsx";
 
 const FriendsPage = () => {
-  return <FriendsView />;
+  return <FriendProfileView />;
 };
 
 export default FriendsPage;

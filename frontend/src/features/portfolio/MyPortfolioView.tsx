@@ -1,54 +1,29 @@
-import React, { useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  addToPortfolio,
-  fetchUserStocks,
-  removeUserStock,
-  searchStockBySymbol,
-  type Stock,
-} from "./api";
+import { useRef, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { usePortfolioData } from "../../hooks/usePortfolio";
+import { searchStockBySymbol, type Stock } from "../../services/portfolio";
 
 const MyPortfolio = () => {
-  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id?.toString() ?? null;
   const stockRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [searchedStock, setSearchedStock] = useState<Stock | null>(null);
 
-  //Load portfolio stocks
-  const { data: stocks, isLoading } = useQuery({
-    queryKey: ["userStocks"],
-    queryFn: fetchUserStocks,
-  });
+  // hook for data + mutations
+  const {
+    stocks,
+    isLoading,
+    queryError,
+    addStockMutation,
+    deleteStockMutation,
+    addStock,
+    removeStock,
+  } = usePortfolioData(userId);
 
   const alreadyOwnsStock = stocks?.some(
     (s) => s.ticker === searchedStock?.ticker,
   );
-
-  // Search stock mutation, search stock when form is submitted and add stock to the
-  const addMutation = useMutation({
-    mutationFn: addToPortfolio,
-    onSuccess: (stock) => {
-      // Update cached portfolio without refetching
-      queryClient.setQueryData<Stock[]>(["userStocks"], (old) => {
-        if (!old) return [stock];
-        if (old.some((s) => s.ticker === stock.ticker)) return old;
-        return [...old, stock];
-      });
-    },
-    onError: (err: Error) => setError(err.message),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: removeUserStock,
-    onSuccess: (_, id) => {
-      // Update cached portfolio without refetching
-      queryClient.setQueryData<Stock[]>(["userStocks"], (old) => {
-        if (!old) return [];
-        return old.filter((s) => s.id.toString() !== id);
-      });
-    },
-    onError: (err: Error) => setError(err.message),
-  });
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,13 +44,20 @@ const MyPortfolio = () => {
     }
   };
 
+  const mutationError =
+    (addStockMutation.error as Error | null)?.message ||
+    (deleteStockMutation.error as Error | null)?.message ||
+    null;
+  const finalError =
+    error || mutationError || (queryError as Error | null)?.message || null;
+
   if (isLoading)
-    return <p className="mt-4 text-center text-2xl">Loading portfolio...</p>;
+    return <p className="mt-4 text-center text-2xl">Loading profile...</p>;
 
   return (
     <div className="m-40">
       {error && (
-        <p className="mt-4 text-center text-2xl text-red-500">{error}</p>
+        <p className="mt-4 text-center text-2xl text-red-500">{finalError}</p>
       )}
       <h1 className="text-heading text-4xl">My Portfolio</h1>
       <form
@@ -133,7 +115,7 @@ const MyPortfolio = () => {
           </p>
           {!alreadyOwnsStock && (
             <button
-              onClick={() => addMutation.mutate(searchedStock.ticker)}
+              onClick={() => addStock(searchedStock.ticker)}
               className="bg-c-purple ml-auto items-center justify-end rounded px-4 py-2 text-white"
             >
               Add to portfolio
@@ -180,8 +162,8 @@ const MyPortfolio = () => {
                   </td>
                   <td className="border border-gray-200 px-6 py-4">
                     <button
-                      onClick={() => deleteMutation.mutate(stock.id.toString())}
-                      className="items-center rounded bg-red-400 px-4 py-2 text-center text-white"
+                      onClick={() => removeStock(stock.id.toString())}
+                      className="items-center rounded bg-red-300 px-4 py-2 text-center text-white"
                     >
                       Remove
                     </button>

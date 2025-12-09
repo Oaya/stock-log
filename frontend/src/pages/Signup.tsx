@@ -10,6 +10,7 @@ const SignUp = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const navigate = useNavigate();
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
@@ -33,7 +34,11 @@ const SignUp = () => {
         email,
         password,
       });
-      navigate("/my_portfolio");
+      setInfo(
+        `We sent a confirmation email to ${email}. Please click the link in that email before logging in.`,
+      );
+
+      setTimeout(() => navigate("/login"), 10000);
     } catch (res) {
       setError(res instanceof Error ? res.message : String(res));
     }
@@ -45,6 +50,9 @@ const SignUp = () => {
       {error && (
         <p className="m-4 text-center text-2xl text-red-500">{error}</p>
       )}
+      {info && (
+        <p className="m-4 text-center text-2xl text-green-600">{info}</p>
+      )}
 
       <form onSubmit={handleSignup} className="mx-auto w-200 text-2xl">
         <div className="mb-5">
@@ -55,23 +63,11 @@ const SignUp = () => {
             ref={emailRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 bg-white p-3 px-8 py-5 shadow-md"
           />
         </div>
 
         <div className="grid md:grid-cols-2 md:gap-6">
-          <div className="group relative z-0 mb-5 w-full">
-            <label className="mb-2 block font-bold">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              ref={lastNameRef}
-              onChange={() => setError(null)}
-              required
-              className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
-            />
-          </div>
-
           <div className="group relative z-0 mb-5 w-full">
             <label className="mb-2 block font-bold">First Name</label>
             <input
@@ -80,7 +76,18 @@ const SignUp = () => {
               ref={firstNameRef}
               onChange={() => setError(null)}
               required
-              className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+              className="mb-5 w-full rounded border border-gray-300 bg-white p-3 px-8 py-5 shadow-md"
+            />
+          </div>
+          <div className="group relative z-0 mb-5 w-full">
+            <label className="mb-2 block font-bold">Last Name</label>
+            <input
+              type="text"
+              name="lastName"
+              ref={lastNameRef}
+              onChange={() => setError(null)}
+              required
+              className="mb-5 w-full rounded border border-gray-300 bg-white p-3 px-8 py-5 shadow-md"
             />
           </div>
         </div>
@@ -93,7 +100,7 @@ const SignUp = () => {
             ref={passwordRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 bg-white p-3 px-8 py-5 shadow-md"
           />
         </div>
 
@@ -105,7 +112,7 @@ const SignUp = () => {
             ref={confirmPasswordRef}
             onChange={() => setError(null)}
             required
-            className="mb-5 w-full rounded border border-gray-300 p-3 px-8 py-5 shadow-md"
+            className="mb-5 w-full rounded border border-gray-300 bg-white p-3 px-8 py-5 shadow-md"
           />
         </div>
 

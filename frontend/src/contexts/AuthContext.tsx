@@ -5,17 +5,29 @@ import {
   type ReactNode,
   useEffect,
 } from "react";
-import { loginRequest, meRequest, updateUserRequest } from "../services/auth";
+import {
+  loginRequest,
+  meRequest,
+  signupRequest,
+  updateUserRequest,
+} from "../services/auth";
 
 export interface User {
   email?: string;
   id?: number;
-  token: string;
+  token?: string;
   first_name?: string;
   last_name?: string;
 }
 
 export interface LoginUserData {
+  first_name?: string;
+  last_name?: string;
+  email: string;
+  password: string;
+}
+
+export interface SignupUserData {
   first_name?: string;
   last_name?: string;
   email: string;
@@ -34,7 +46,7 @@ export interface UpdateUserData {
 const AuthContext = createContext<{
   user: User | null;
   login: (userData: LoginUserData) => Promise<void>;
-  signup: (userData: LoginUserData) => Promise<void>;
+  signup: (userData: SignupUserData) => Promise<void>;
   logout: () => Promise<void>;
   updateAccount: (userData: UpdateUserData) => Promise<void>;
 }>({
@@ -69,13 +81,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(userData: LoginUserData) {
     const loggedInUser = await loginRequest(userData);
-    localStorage.setItem("jwt", loggedInUser.token);
+    if (loggedInUser.token) {
+      localStorage.setItem("jwt", loggedInUser.token);
+    }
+
     setUser(loggedInUser);
   }
 
-  async function signup(userData: LoginUserData) {
-    const registeredUser = await loginRequest(userData);
-    localStorage.setItem("jwt", registeredUser.token);
+  async function signup(userData: SignupUserData) {
+    const registeredUser = await signupRequest(userData);
     setUser(registeredUser);
   }
 

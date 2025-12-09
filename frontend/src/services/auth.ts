@@ -1,5 +1,6 @@
 import type {
   LoginUserData,
+  SignupUserData,
   UpdateUserData,
   User,
 } from "../contexts/AuthContext";
@@ -47,7 +48,7 @@ export const loginRequest = async (userData: LoginUserData) => {
   return user;
 };
 
-export const signupRequest = async (userData: LoginUserData) => {
+export const signupRequest = async (userData: SignupUserData) => {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -67,24 +68,11 @@ export const signupRequest = async (userData: LoginUserData) => {
     throw new Error(`Signin failed: ${data.error}`);
   }
 
-  // Extract JWT from the Authorization header
-  const authHeader = res.headers.get("Authorization");
-
-  const token = authHeader?.split(" ")[1];
-
-  if (!token) {
-    throw new Error("No token returned from server");
-  }
-
-  // Store token
-  localStorage.setItem("jwt", token);
-
   console.log("Sign in response data:", data);
 
   const user: User = {
     email: data.user.email,
     id: data.user.id,
-    token,
     first_name: data.user.first_name,
     last_name: data.user.last_name,
   };
